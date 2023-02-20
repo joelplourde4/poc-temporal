@@ -1,0 +1,48 @@
+{
+  "id": "mydynamicgreetingworkflow",
+  "name": "My Dynamic Greeting Workflow",
+  "version": "2.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "GreetMichael",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Hello",
+              "name": "Michael Wazowski!"
+            }
+          }
+        },
+        {
+          "name": "Sleep Action",
+          "functionRef": {
+            "refName": "sleep",
+            "arguments": {
+              "millis": 10000
+            }
+          }
+        },
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Goodbye",
+              "name": "Mr. Waternoose"
+            }
+          }
+        }
+      ],
+      "end": true
+    }
+  ],
+  "timeouts": {
+    "stateExecTimeout": "PT1M"
+  }
+}

@@ -1,5 +1,7 @@
 package com.cloudops.engine.sleep;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
@@ -7,5 +9,5 @@ import io.temporal.activity.ActivityMethod;
 public interface MySleepActivity {
 
    @ActivityMethod(name = "sleep")
-   void sleep(long millis);
+   void sleep(JsonNode jsonNode);
 }

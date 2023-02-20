@@ -3,6 +3,9 @@ package com.cloudops.engine.basic;
 import java.time.Duration;
 
 import com.cloudops.engine.BaseActivity;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
@@ -37,7 +40,10 @@ public class MyWorkflowImpl implements MyWorkflow {
                          .build())
                  .build());
 
-         myFlakyActivity.flakyMethod();
+         ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+         jsonNode.put("failing_percentage", 0.5);
+
+         myFlakyActivity.flakyMethod(jsonNode);
 
          System.out.println("Activity 2: " + result);
 
