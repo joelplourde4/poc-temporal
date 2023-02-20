@@ -1,5 +1,7 @@
 package com.cloudops.engine;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ import io.temporal.worker.WorkerFactory;
 
 @EnableAutoConfiguration
 @SpringBootApplication
-public class EngineApplication implements CommandLineRunner {
+public class EngineApplication {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(EngineApplication.class);
 
@@ -33,22 +35,10 @@ public class EngineApplication implements CommandLineRunner {
    private static final String NAMESPACE = "default";
 
    @Autowired
-   private MyActivityImpl myActivity;
-
-   @Autowired
-   private MyFlakyActivityImpl myFlakyActivity;
-
-   @Autowired
-   private MyGreetingActivity myGreetingActivity;
+   private List<BaseActivity> activities;
 
    public static void main(String[] args) {
       SpringApplication.run(EngineApplication.class, args);
-   }
-
-   @Override
-   public void run(String... args) throws Exception {
-      LOGGER.info("Joining thread, you can press Ctrl+C to shutdown application");
-      // Thread.currentThread().join();
    }
 
    /*
@@ -88,13 +78,14 @@ public class EngineApplication implements CommandLineRunner {
       // For Dynamic DSL Workflow
       worker.registerWorkflowImplementationTypes(MyDynamicWorkflowImpl.class);
 
+      // Basic workflow
       worker.registerWorkflowImplementationTypes(MyWorkflowImpl.class);  // Needs to point to the implementation of the workflow
-      worker.registerActivitiesImplementations(myActivity);
-      worker.registerActivitiesImplementations(myFlakyActivity);
 
       // Greeting workflows
       worker.registerWorkflowImplementationTypes(MyGreetingWorkflowImpl.class);
-      worker.registerActivitiesImplementations(myGreetingActivity);
+
+      // Register all Activities
+      activities.forEach(worker::registerActivitiesImplementations);
 
       workerFactory.start();
       return worker;

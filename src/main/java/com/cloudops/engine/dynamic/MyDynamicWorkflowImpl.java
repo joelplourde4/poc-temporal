@@ -86,17 +86,11 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       // An operation state can have multiple actions:
       for (Action action : operationState.getActions()) {
 
-         // TODO Here the arguments will be hardcoded for now, we would need to have a format per operation action.
-         String greeting = String.valueOf(action.getFunctionRef().getArguments().get("greeting"));
-         String name = String.valueOf(action.getFunctionRef().getArguments().get("name"));
-
-         String activityName = action.getFunctionRef().getRefName();
-
          // TODO Make this Asynchronous, right now it is synchronous and thus blocking
          Object result = activities.execute(
-                 activityName,
+                 action.getFunctionRef().getRefName(),
                  String.class, // This will need to be generify to a generic payload returned by an activity.
-                 greeting, name);
+                 action.getFunctionRef().getArguments());
 
          // TODO Add the result to the global workload data.
          System.out.println("Result from the activity: " + result);

@@ -2,6 +2,8 @@ package com.cloudops.engine.basic;
 
 import java.time.Duration;
 
+import com.cloudops.engine.BaseActivity;
+
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;

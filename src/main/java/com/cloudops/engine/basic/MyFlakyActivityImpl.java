@@ -2,8 +2,10 @@ package com.cloudops.engine.basic;
 
 import org.springframework.stereotype.Component;
 
+import com.cloudops.engine.BaseActivity;
+
 @Component
-public class MyFlakyActivityImpl implements MyFlakyActivity {
+public class MyFlakyActivityImpl extends BaseActivity implements MyFlakyActivity {
 
    @Override
    public void flakyMethod() {

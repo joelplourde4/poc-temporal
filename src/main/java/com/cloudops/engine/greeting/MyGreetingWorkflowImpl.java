@@ -2,6 +2,10 @@ package com.cloudops.engine.greeting;
 
 import java.time.Duration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
@@ -19,6 +23,10 @@ public class MyGreetingWorkflowImpl implements MyGreetingWorkflow {
                       .build())
               .build());
 
-      return myGreetingActivity.composeGreeting("World!", name);
+      ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+      jsonNode.put("greeting", "hello");
+      jsonNode.put("name", "world!");
+
+      return myGreetingActivity.composeGreeting(jsonNode);
    }
 }
