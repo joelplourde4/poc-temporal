@@ -6,6 +6,6 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface MyActivity {
 
-   @ActivityMethod
+   @ActivityMethod(name = "doSomething")
    String doSomething();
 }

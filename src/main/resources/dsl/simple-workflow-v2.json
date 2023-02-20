@@ -1,0 +1,23 @@
+{
+  "id": "mysimpleworkflowwithoutarguments",
+  "name": "My Simple Workflow without Arguments",
+  "version": "2.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "The-very-best-name",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "A not-so-specific-activity",
+          "functionRef": {
+            "refName": "doSomething",
+            "arguments": {}
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}

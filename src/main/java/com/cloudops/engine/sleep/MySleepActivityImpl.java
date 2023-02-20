@@ -7,8 +7,6 @@ import org.springframework.stereotype.Component;
 import com.cloudops.engine.BaseActivity;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.temporal.workflow.Workflow;
-
 @Component
 public class MySleepActivityImpl extends BaseActivity implements MySleepActivity {
 

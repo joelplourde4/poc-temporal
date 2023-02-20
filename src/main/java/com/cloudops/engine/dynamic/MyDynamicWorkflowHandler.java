@@ -27,8 +27,8 @@ public class MyDynamicWorkflowHandler {
    @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
-      String id = "retry-policy";
-      String version = "v1";
+      String id = "simple-workflow";
+      String version = "v2";
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
       WorkflowStub workflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl", WorkflowOptions.newBuilder()
