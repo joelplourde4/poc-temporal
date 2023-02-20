@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringUtils;
+import com.cloudops.engine.dynamic.model.WorkflowData;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.interfaces.State;
@@ -28,7 +28,9 @@ import io.temporal.workflow.Workflow;
 public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
    private io.serverlessworkflow.api.Workflow dslWorkflow;
-   private ActivityStub activities;
+   private ActivityStub activity;
+
+   private final WorkflowData workflowData = new WorkflowData();
 
    // TODO We would need a global workflow data where the result of each activity can be inserted into.
 
@@ -51,14 +53,13 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       // Initialize the activity based on the dsl workflow
       ActivityOptions activityOptions = initializeActivityOptions(dslWorkflow);
 
-      // Create a dynamic activities stub to be used for all actions in dsl
-      activities = Workflow.newUntypedActivityStub(activityOptions);
+      // Create a dynamic activities stub to be used for all states in dsl
+      activity = Workflow.newUntypedActivityStub(activityOptions);
 
       // Execute the first state of this workflow.
       executeState(WorkflowUtils.getStartingState(dslWorkflow));
 
-      // TODO return the Workload data built overtime here.
-      return null;
+      return workflowData;
    }
 
    /**
@@ -96,22 +97,21 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       for (Action action : operationState.getActions()) {
 
          // TODO Make this Asynchronous, right now it is synchronous and thus blocking
-         Object result = activities.execute(
+         Object data = activity.execute(
                  action.getFunctionRef().getRefName(),
                  String.class, // This will need to be generify to a generic payload returned by an activity.
                  action.getFunctionRef().getArguments());
 
-         // TODO Add the result to the global workload data.
-         System.out.println("Result from the activity: " + result);
+         // Record the data returned by the activity
+         workflowData.addResults(action.getName(), activity);
       }
 
       // Check if there is a transition.
       if (operationState.getTransition() == null || operationState.getTransition().getNextState() == null) {
-         System.out.println("No next state, we are done.");
          return null;
       }
 
-      System.out.println("Proceed to the next state of this workflow.");
+      // Proceed to the next state.
       return WorkflowUtils.getStateWithName(dslWorkflow, operationState.getTransition().getNextState());
    }
 
@@ -119,9 +119,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
     * Fetch the DSL workflow by its id and version
     */
    private io.serverlessworkflow.api.Workflow fetchDslWorkflow(String id, String version) {
-      System.out.println("Fetching the workflow using: id: " + id + " version: " + version);
       // Using the workflow-id + workflow version, find the correct workflow.
-
       // TODO this is where we would fetch the registered workflow from our db.
       return DynamicWorkflowUtils.getWorkflowFromFile("dsl/" + id + "-" + version + ".json");
    }

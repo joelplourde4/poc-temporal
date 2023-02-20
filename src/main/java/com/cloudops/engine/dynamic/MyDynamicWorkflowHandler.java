@@ -27,8 +27,8 @@ public class MyDynamicWorkflowHandler {
    @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
-      String id = "simple-workflow";
-      String version = "v2";
+      String id = "multiple-actions";
+      String version = "v1";
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
       WorkflowStub workflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl", WorkflowOptions.newBuilder()
@@ -42,6 +42,6 @@ public class MyDynamicWorkflowHandler {
       // Wait for workflow to finish, it will return a WorkloadData (Eventually)
       JsonNode result = workflowStub.getResult(JsonNode.class);
 
-      System.out.println("Result: " + result);
+      System.out.println("Result: " + result.toPrettyString());
    }
 }
