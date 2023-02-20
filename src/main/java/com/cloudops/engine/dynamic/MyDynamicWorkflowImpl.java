@@ -103,7 +103,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
                  action.getFunctionRef().getArguments());
 
          // Record the data returned by the activity
-         workflowData.addResults(action.getName(), activity);
+         workflowData.addResults(action.getName(), data);
       }
 
       // Check if there is a transition.

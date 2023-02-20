@@ -27,7 +27,7 @@ public class MyDynamicWorkflowHandler {
    @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
-      String id = "multiple-actions";
+      String id = "simple-workflow";
       String version = "v1";
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
