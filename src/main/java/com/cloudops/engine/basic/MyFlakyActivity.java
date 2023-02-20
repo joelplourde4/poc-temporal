@@ -1,0 +1,11 @@
+package com.cloudops.engine.basic;
+
+import io.temporal.activity.ActivityInterface;
+import io.temporal.activity.ActivityMethod;
+
+@ActivityInterface
+public interface MyFlakyActivity {
+
+   @ActivityMethod
+   void flakyMethod();
+}
