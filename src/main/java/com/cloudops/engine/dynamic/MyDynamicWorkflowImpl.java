@@ -2,10 +2,8 @@ package com.cloudops.engine.dynamic;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,16 +14,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.events.OnEvents;
 import io.serverlessworkflow.api.interfaces.State;
-import io.serverlessworkflow.api.retry.RetryDefinition;
-import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.EventState;
 import io.serverlessworkflow.api.states.OperationState;
-import io.serverlessworkflow.api.timeouts.StateExecTimeout;
-import io.serverlessworkflow.api.timeouts.TimeoutsDefinition;
-import io.serverlessworkflow.api.workflow.Retries;
 import io.serverlessworkflow.utils.WorkflowUtils;
 import io.temporal.activity.ActivityOptions;
-import io.temporal.common.RetryOptions;
 import io.temporal.common.converter.EncodedValues;
 import io.temporal.workflow.ActivityStub;
 import io.temporal.workflow.DynamicSignalHandler;
@@ -46,6 +38,9 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
    private final WorkflowData workflowData = new WorkflowData();
 
+   // A signal map that waits
+   private Map<String, Boolean> signalMap = new HashMap<>();
+
    // TODO We would need a global workflow data where the result of each activity can be inserted into.
 
    /**
@@ -62,10 +57,10 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       Object arguments = encodedValues.get(2, String.class);
 
       // Using the workflow-id + workflow version, find the correct workflow.
-      dslWorkflow = fetchDslWorkflow(id, version);
+      dslWorkflow = DynamicWorkflowUtils.getWorkflowFromFile("dsl/" + id + "-" + version + ".json");
 
       // Start listening to any signals.
-      registerSignals();
+      registerSignalHandler();
 
       // Initialize the activity based on the dsl workflow
       ActivityOptions activityOptions = ActivityOptionsUtils.initializeActivityOptions(dslWorkflow);
@@ -79,19 +74,36 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       return workflowData;
    }
 
-   private void registerSignals() {
+   /**
+    * Register the Signal Handler
+    */
+   private void registerSignalHandler() {
       Workflow.registerListener((DynamicSignalHandler) this::handleSignals);
    }
 
+   /**
+    * Method that handle signals received
+    *
+    * This method may "wake" up this workflow if necessary.
+    *
+    * @param signalName The name of the signal
+    * @param encodedValues The encoded values
+    */
    private void handleSignals(String signalName, EncodedValues encodedValues) {
-      // TODO Handle the signal
-      System.out.println("signal: " + signalName);
-      System.out.println("encoded values: " + encodedValues);
+      // Only if the received signal is known.
+      if (signalMap.containsKey(signalName)) {
+         signalMap.replace(signalName, true);
+      }
+
+      // Check if all signals have been received
+      if (signalMap.values().stream().allMatch(x -> x)) {
+         this.proceed = true;
+      }
    }
 
    /**
     * This method execute the current state of the workflow
-    *
+    * <p>
     * Until the workflow has a next state, it'll continue
     *
     * @param workflowState The current DSL workflow state
@@ -102,6 +114,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
          switch (workflowState.getType()) {
             case OPERATION -> executeState(executeOperation(workflowState));
             case EVENT -> executeState(executeEvent(workflowState));
+            case SWITCH -> executeState(executeSwitch(workflowState));
             default -> throw new IllegalStateException("Other workflow state aren't yet supported");
          }
       }
@@ -109,6 +122,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
    /**
     * Execute an operation
+    *
     * @param workflowState The workflow state to execute as an operation
     * @return The next state if any.
     */
@@ -154,6 +168,11 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
       for (OnEvents onEvents : eventState.getOnEvents()) {
          for (Action action : onEvents.getActions()) {
+            // TODO, from the eventRefs, build a signal map that can act as a counter, right now it is ON/OFF
+
+            // For each event refs, add this key to the signal map.
+            onEvents.getEventRefs().forEach(eventRef -> signalMap.put(eventRef, false));
+
             try {
                Method method = this.getClass().getMethod(action.getFunctionRef().getRefName(), JsonNode.class);
                method.invoke(this, action.getFunctionRef().getArguments());
@@ -172,19 +191,21 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       return WorkflowUtils.getStateWithName(dslWorkflow, eventState.getTransition().getNextState());
    }
 
-   /**
-    * Fetch the DSL workflow by its id and version
-    */
-   private io.serverlessworkflow.api.Workflow fetchDslWorkflow(String id, String version) {
-      // Using the workflow-id + workflow version, find the correct workflow.
-      // TODO this is where we would fetch the registered workflow from our db.
-      return DynamicWorkflowUtils.getWorkflowFromFile("dsl/" + id + "-" + version + ".json");
+   // TODO implement the switch state where we can decided between two, three, etc. flow.
+   private State executeSwitch(State workflowState) {
+      return null;
    }
 
+   /**
+    * This method blocks until a signal has been received.
+    * @param jsonNode The arguments, if any.
+    */
    public void waitForSignal(JsonNode jsonNode) {
-      // TODO use a signal map to complexify this behavior
+      this.proceed = false;
+
       while (!proceed) {
          System.out.println("Waiting for signal before proceeding....");
+         // TODO wait for complex condition from the arguments.
          Workflow.await(() -> proceed); // We wait for the Boolean condition to turn true
       }
    }

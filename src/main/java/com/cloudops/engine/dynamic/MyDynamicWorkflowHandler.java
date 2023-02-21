@@ -24,7 +24,7 @@ public class MyDynamicWorkflowHandler {
    @Autowired
    private Worker worker;
 
-   //@PostConstruct
+   // @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
       String id = "signal-workflow";
@@ -45,12 +45,12 @@ public class MyDynamicWorkflowHandler {
       System.out.println("Result: " + result.toPrettyString());
    }
 
-   @PostConstruct
+   // @PostConstruct
    public void sendSignal() {
-      sendSignal("806a3986-9c11-403b-ac63-6d7a2c41fdb6");
+      sendSignal("09d92d72-c8bd-46af-8f7e-87aa7d7f49b7", "AcknowledgementSignal");
    }
 
-   private void sendSignal(String workflowId) {
+   private void sendSignal(String workflowId, String signal) {
       // Fetch the current running workflow by its type, id and task-queue.
       // Using the client-side stub to a single Workflow instance
       WorkflowStub untypedWorkflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl",
@@ -60,6 +60,6 @@ public class MyDynamicWorkflowHandler {
                       .build());
 
       // You can pass any arguments,
-      untypedWorkflowStub.signalWithStart("receiveAcknowledgment", new Object[]{}, new Object[]{});
+      untypedWorkflowStub.signalWithStart(signal, new Object[]{}, new Object[]{});
    }
 }

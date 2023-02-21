@@ -11,7 +11,7 @@
       "exclusive": true,
       "onEvents": [
         {
-          "eventRefs": ["WaitForSignal"],
+          "eventRefs": ["AcknowledgementSignal"],
           "actions": [
             {
               "functionRef": {
