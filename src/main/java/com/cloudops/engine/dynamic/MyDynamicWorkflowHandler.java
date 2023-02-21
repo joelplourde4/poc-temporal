@@ -24,10 +24,10 @@ public class MyDynamicWorkflowHandler {
    @Autowired
    private Worker worker;
 
-   // @PostConstruct
+   @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
-      String id = "signal-workflow";
+      String id = "switch-workflow";
       String version = "v1";
 
       // Create a new Dynamic workflow on the Task queue: Task Queue

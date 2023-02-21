@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,8 +15,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.events.OnEvents;
 import io.serverlessworkflow.api.interfaces.State;
+import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.EventState;
 import io.serverlessworkflow.api.states.OperationState;
+import io.serverlessworkflow.api.states.SwitchState;
+import io.serverlessworkflow.api.switchconditions.DataCondition;
 import io.serverlessworkflow.utils.WorkflowUtils;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.converter.EncodedValues;
@@ -146,13 +150,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
          workflowData.addResults(action.getName(), data);
       }
 
-      // Check if there is a transition.
-      if (operationState.getTransition() == null || operationState.getTransition().getNextState() == null) {
-         return null;
-      }
-
-      // Proceed to the next state.
-      return WorkflowUtils.getStateWithName(dslWorkflow, operationState.getTransition().getNextState());
+      return transitionNextState(operationState);
    }
 
    /**
@@ -182,18 +180,45 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
          }
       }
 
-      // Check if there is a transition.
-      if (eventState.getTransition() == null || eventState.getTransition().getNextState() == null) {
+      return transitionNextState(eventState);
+   }
+
+   /**
+    * Execute a switch statement to determine, based on a condition, what is the next state to proceed to.
+    *
+    * @param workflowState The workflow state to execute as an operation
+    * @return The next state that fulfill the condition, if any.
+    */
+   private State executeSwitch(State workflowState) {
+      if (!(workflowState instanceof SwitchState switchState)) {
+         throw new IllegalStateException("The type of the state " + workflowState.getType() + " does not match its implementation, please verify.");
+      }
+
+      String nextState = "";
+      for (DataCondition dataCondition : switchState.getDataConditions()) {
+
+         // TODO validate the condition for real.
+         if (true) {
+            nextState = dataCondition.getTransition().getNextState();
+
+            // Stop at the first true condition.
+            break;
+         }
+      }
+
+      // If none of the condition was ok
+      if (StringUtils.isBlank(nextState)) {
+
+         // Try to fallback on the default condition
+         if (switchState.getDefaultCondition().getTransition() != null && StringUtils.isNotBlank(switchState.getDefaultCondition().getTransition().getNextState())) {
+            return WorkflowUtils.getStateWithName(dslWorkflow, switchState.getDefaultCondition().getTransition().getNextState());
+         }
+
+         // Else, return null.
          return null;
       }
 
-      // Proceed to the next state.
-      return WorkflowUtils.getStateWithName(dslWorkflow, eventState.getTransition().getNextState());
-   }
-
-   // TODO implement the switch state where we can decided between two, three, etc. flow.
-   private State executeSwitch(State workflowState) {
-      return null;
+      return WorkflowUtils.getStateWithName(dslWorkflow, nextState);
    }
 
    /**
@@ -208,5 +233,22 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
          // TODO wait for complex condition from the arguments.
          Workflow.await(() -> proceed); // We wait for the Boolean condition to turn true
       }
+   }
+
+   /**
+    * Transition to the next state
+    *
+    * @param currentState Current State
+    * @return The next state, or null if it is the last state.
+    */
+   private State transitionNextState(DefaultState currentState) {
+      // Check if there is a transition.
+      if (currentState.getTransition() == null || currentState.getTransition().getNextState() == null) {
+         // Else, return null.
+         return null;
+      }
+
+      // Proceed to the next state.
+      return WorkflowUtils.getStateWithName(dslWorkflow, currentState.getTransition().getNextState());
    }
 }

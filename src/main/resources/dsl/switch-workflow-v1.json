@@ -1,0 +1,79 @@
+{
+  "id": "edc1a914-a898-46a8-92d9-069280522590",
+  "name": "My Dynamic Workflow with a Switch state",
+  "version": "1.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "SwitchState",
+      "type": "switch",
+      "dataConditions": [
+        {
+          "name": "Value less than 1",
+          "condition": "${ .value < 1 }",
+          "transition": "GoodbyeWaternoose"
+        },
+        {
+          "name": "Value higher or equals to 1",
+          "condition": "${ .value >= 1 }",
+          "transition": "GreetMichael"
+        }
+      ],
+      "timeouts": {
+        "stateExecTimeout": "PT1M"
+      },
+      "defaultCondition": {
+        "transition": "DefaultAction"
+      }
+    },
+    {
+      "name": "GreetMichael",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Hello",
+              "name": "Michael Wazowski!"
+            }
+          }
+        }
+      ],
+      "end": true
+    },
+    {
+      "name": "GoodbyeWaternoose",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Goodbye Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Goodbye",
+              "name": "Mr. Waternoose"
+            }
+          }
+        }
+      ],
+      "end": true
+    },
+    {
+      "name": "DefaultAction",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Default Action",
+          "functionRef": {
+            "refName": "doSomething",
+            "arguments": {}
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}
