@@ -1,0 +1,48 @@
+{
+  "id": "mysignalworkflow",
+  "name": "My Dynamic Workflow waiting for signal",
+  "version": "1.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "WaitForSignal",
+      "type": "event",
+      "exclusive": true,
+      "onEvents": [
+        {
+          "eventRefs": ["WaitForSignal"],
+          "actions": [
+            {
+              "functionRef": {
+                "refName": "waitForSignal",
+                "arguments": {
+                  "emails": ["poppastefan@cloudops.com"]
+                }
+              }
+            }
+          ],
+          "actionMode": "sequential"
+        }
+      ],
+      "transition": "GreetMichael"
+    },
+    {
+      "name": "GreetMichael",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Hello",
+              "name": "Michael Wazowski!"
+            }
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}

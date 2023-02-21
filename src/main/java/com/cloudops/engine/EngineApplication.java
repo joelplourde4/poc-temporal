@@ -5,18 +5,15 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.cloudops.engine.basic.MyActivityImpl;
-import com.cloudops.engine.basic.MyFlakyActivityImpl;
 import com.cloudops.engine.basic.MyWorkflowImpl;
 import com.cloudops.engine.dynamic.MyDynamicWorkflowImpl;
-import com.cloudops.engine.greeting.MyGreetingActivity;
 import com.cloudops.engine.greeting.MyGreetingWorkflowImpl;
+import com.cloudops.engine.input.MyAcknowledgementWorkflowImpl;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -83,6 +80,9 @@ public class EngineApplication {
 
       // Greeting workflows
       worker.registerWorkflowImplementationTypes(MyGreetingWorkflowImpl.class);
+
+      // Input workflow
+      worker.registerWorkflowImplementationTypes(MyAcknowledgementWorkflowImpl.class);
 
       // Register all Activities
       activities.forEach(worker::registerActivitiesImplementations);
