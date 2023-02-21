@@ -68,7 +68,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       registerSignals();
 
       // Initialize the activity based on the dsl workflow
-      ActivityOptions activityOptions = initializeActivityOptions(dslWorkflow);
+      ActivityOptions activityOptions = ActivityOptionsUtils.initializeActivityOptions(dslWorkflow);
 
       // Create a dynamic activities stub to be used for all states in dsl
       activity = Workflow.newUntypedActivityStub(activityOptions);
@@ -144,8 +144,8 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
    /**
     * An event executes a method on the workflow itself.
     *
-    * @param workflowState
-    * @return
+    * @param workflowState The current workflow state
+    * @return The next workflow state, if any.
     */
    private State executeEvent(State workflowState) {
       if (!(workflowState instanceof EventState eventState)) {
@@ -179,57 +179,6 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       // Using the workflow-id + workflow version, find the correct workflow.
       // TODO this is where we would fetch the registered workflow from our db.
       return DynamicWorkflowUtils.getWorkflowFromFile("dsl/" + id + "-" + version + ".json");
-   }
-
-   // TODO move this to a ActivityOptions utility class
-   /**
-    * Initialize the Activity Options based on the DSL workflow
-    * @param dslWorkflow The DSL workflow
-    * @return Activity Options
-    */
-   private ActivityOptions initializeActivityOptions(io.serverlessworkflow.api.Workflow dslWorkflow) {
-      // An example of a configuration
-      return ActivityOptions.newBuilder()
-              .setStartToCloseTimeout(initializeStartToCloseTimeout())
-              .setRetryOptions(RetryOptions.newBuilder()
-                      .setMaximumAttempts(initializeMaximumAttempts())
-                      .validateBuildWithDefaults())
-              .validateAndBuildWithDefaults();
-   }
-
-   // TODO move this to a ActivityOptions utility class
-   /**
-    * Example of a configuration of max attempts using the DSL workflow Retry policy at:
-    * https://github.com/serverlessworkflow/specification/blob/main/specification.md#action-retries
-    * @return Number of max attempts configured, else default to 5.
-    */
-   private int initializeMaximumAttempts() {
-      List<RetryDefinition> retryDefinitions = Optional.ofNullable(dslWorkflow)
-              .map(io.serverlessworkflow.api.Workflow::getRetries)
-              .map(Retries::getRetryDefs)
-              .orElse(new ArrayList<>());
-
-      // Default to 5 retry attempts.
-      if (retryDefinitions.isEmpty()) {
-         return 5;
-      }
-
-      return Integer.parseInt(retryDefinitions.get(0).getMaxAttempts());
-   }
-
-   // TODO move this to a ActivityOptions utility class
-   /**
-    * Example of a configuration of start to close timeout for an activity using the DSL workflow Timeout policy at:
-    * https://github.com/serverlessworkflow/specification/blob/main/specification.md#states-timeout-definition
-    * @return The duration if provided, else default to 30 seconds.
-    */
-   private Duration initializeStartToCloseTimeout() {
-      return Duration.parse(Optional.ofNullable(dslWorkflow)
-              .map(io.serverlessworkflow.api.Workflow::getTimeouts)
-              .map(TimeoutsDefinition::getStateExecTimeout)
-              .map(StateExecTimeout::getTotal)
-              .orElse("PT30S") // Default to 30 seconds timeout
-      );
    }
 
    public void waitForSignal(JsonNode jsonNode) {
