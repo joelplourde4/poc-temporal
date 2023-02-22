@@ -1,0 +1,22 @@
+{
+  "id": "myforeachdynamicworkflow",
+  "name": "My ForEach Dynamic Workflow",
+  "version": "1.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "ForEachAction",
+      "type": "foreach",
+      "inputCollection": "[\n   {\n      \"greeting\":\"test1\",\n      \"name\":\"test1\"\n   },\n   {\n      \"greeting\":\"test2\",\n      \"name\":\"test2\"\n   }\n]",
+      "mode": "parallel",
+      "actions": [
+        {
+          "functionRef": {
+            "refName": "composeGreeting"
+          }
+        }
+      ]
+    }
+  ]
+}

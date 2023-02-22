@@ -3,20 +3,28 @@ package com.cloudops.engine.dynamic;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.expression.Expression;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
 
 import com.cloudops.engine.dynamic.model.WorkflowData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.events.OnEvents;
 import io.serverlessworkflow.api.interfaces.State;
 import io.serverlessworkflow.api.states.DefaultState;
 import io.serverlessworkflow.api.states.EventState;
+import io.serverlessworkflow.api.states.ForEachState;
 import io.serverlessworkflow.api.states.OperationState;
 import io.serverlessworkflow.api.states.SwitchState;
 import io.serverlessworkflow.api.switchconditions.DataCondition;
@@ -119,6 +127,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
             case OPERATION -> executeState(executeOperation(workflowState));
             case EVENT -> executeState(executeEvent(workflowState));
             case SWITCH -> executeState(executeSwitch(workflowState));
+            case FOREACH -> executeState(executeForEach(workflowState));
             default -> throw new IllegalStateException("Other workflow state aren't yet supported");
          }
       }
@@ -219,6 +228,46 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       }
 
       return WorkflowUtils.getStateWithName(dslWorkflow, nextState);
+   }
+
+   /**
+    * Execute a forEach statement to execute multiple actions either sequentially or asynchronously
+    *
+    * @param workflowState The workflow state to execute as an operation
+    * @return The next state to transition to, if any.
+    */
+   private State executeForEach(State workflowState) {
+      if (!(workflowState instanceof ForEachState forEachState)) {
+         throw new IllegalStateException("The type of the state " + workflowState.getType() + " does not match its implementation, please verify.");
+      }
+
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode jsonNode;
+      try {
+         jsonNode = mapper.readTree(forEachState.getInputCollection());
+      } catch (JsonProcessingException e) {
+         throw new IllegalStateException("The manifest is malformed, this should never happen. Please verify.");
+      }
+
+      if (!jsonNode.isArray()) {
+         throw new IllegalStateException("The input collections is malformed. Please verify.");
+      }
+
+      // A ForEach state can have multiple actions:
+      for (Action action : forEachState.getActions()) {
+
+         // TODO run this sequentially or asynchronously
+         for (final JsonNode object : jsonNode) {
+            Object data = activity.execute(
+                    action.getFunctionRef().getRefName(),
+                    String.class, // This will need to be generify to a generic payload returned by an activity.
+                    object);
+
+            workflowData.addResults(action.getName(), data);
+         }
+      }
+
+      return transitionNextState(forEachState);
    }
 
    /**
