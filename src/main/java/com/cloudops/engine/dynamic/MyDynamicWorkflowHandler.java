@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
+import io.temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
@@ -32,6 +33,7 @@ public class MyDynamicWorkflowHandler {
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
       WorkflowStub workflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl", WorkflowOptions.newBuilder()
+              .setWorkflowId(id + "-" + version)
               .setTaskQueue("task-queue")
               .build()
       );

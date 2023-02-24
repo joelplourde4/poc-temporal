@@ -2,9 +2,12 @@ package com.cloudops.engine.dynamic;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -256,14 +259,30 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       // A ForEach state can have multiple actions:
       for (Action action : forEachState.getActions()) {
 
-         // TODO run this sequentially or asynchronously
-         for (final JsonNode object : jsonNode) {
-            Object data = activity.execute(
-                    action.getFunctionRef().getRefName(),
-                    String.class, // This will need to be generify to a generic payload returned by an activity.
-                    object);
+//         if (forEachState.getMode() == ForEachState.Mode.PARALLEL) {
+//            System.out.println("Executing in parallel!");
+//            List<CompletableFuture<Void>> completableFutures = new ArrayList<>();
+//            for (final JsonNode object : jsonNode) {
+//               completableFutures.add(CompletableFuture.supplyAsync(() -> {
+//                  Object data = activity.execute(
+//                          action.getFunctionRef().getRefName(),
+//                          String.class, // This will need to be generify to a generic payload returned by an activity.
+//                          object);
+//                  workflowData.addResults(action.getName(), data);
+//                  return null;
+//               }));
+//            }
+//            completableFutures.forEach(CompletableFuture::join);
+//         } else {
+            System.out.println("Executing sequentially!");
+            for (final JsonNode object : jsonNode) {
+               Object data = activity.execute(
+                       action.getFunctionRef().getRefName(),
+                       String.class, // This will need to be generify to a generic payload returned by an activity.
+                       object);
 
-            workflowData.addResults(action.getName(), data);
+               workflowData.addResults(action.getName(), data);
+//            }
          }
       }
 

@@ -8,8 +8,8 @@
     {
       "name": "ForEachAction",
       "type": "foreach",
-      "inputCollection": "[\n   {\n      \"greeting\":\"test1\",\n      \"name\":\"test1\"\n   },\n   {\n      \"greeting\":\"test2\",\n      \"name\":\"test2\"\n   }\n]",
-      "mode": "parallel",
+      "inputCollection": "[{\"greeting\":\"Welcome\",\"name\":\"Steven\"},{\"greeting\":\"Hello\",\"name\":\"Sebastien\"}]",
+      "mode": "sequential",
       "actions": [
         {
           "functionRef": {
