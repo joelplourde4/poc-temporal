@@ -1,4 +1,4 @@
-package com.cloudops.engine.basic;
+package com.cloudops.engine.basic.activity;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
@@ -6,6 +6,6 @@ import io.temporal.activity.ActivityMethod;
 @ActivityInterface
 public interface MyActivity {
 
-   @ActivityMethod(name = "doSomething")
-   String doSomething();
+   @ActivityMethod(name = "helloWorld")
+   String helloWorld();
 }

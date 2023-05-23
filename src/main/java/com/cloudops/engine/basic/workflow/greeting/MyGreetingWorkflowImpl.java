@@ -1,8 +1,11 @@
-package com.cloudops.engine.greeting;
+package com.cloudops.engine.basic.workflow.greeting;
 
 import java.time.Duration;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.cloudops.engine.basic.activity.greeting.MyGreetingActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
@@ -13,9 +16,10 @@ import io.temporal.workflow.Workflow;
 // Hard-coded Greeting Workflow
 public class MyGreetingWorkflowImpl implements MyGreetingWorkflow {
 
-   @Override
-   public String getGreeting(String name) {
+   private static final Logger LOGGER = LoggerFactory.getLogger(MyGreetingWorkflowImpl.class);
 
+   @Override
+   public String getGreeting(String greeting, String name) {
       MyGreetingActivity myGreetingActivity = Workflow.newActivityStub(MyGreetingActivity.class, ActivityOptions.newBuilder()
               .setStartToCloseTimeout(Duration.ofHours(1))
               .setRetryOptions(RetryOptions.newBuilder()
@@ -24,9 +28,13 @@ public class MyGreetingWorkflowImpl implements MyGreetingWorkflow {
               .build());
 
       ObjectNode jsonNode = new ObjectMapper().createObjectNode();
-      jsonNode.put("greeting", "hello");
-      jsonNode.put("name", "world!");
+      jsonNode.put("greeting", greeting);
+      jsonNode.put("name", name);
 
-      return myGreetingActivity.composeGreeting(jsonNode);
+      String result = myGreetingActivity.composeGreeting(jsonNode);
+
+      LOGGER.info("{}", result);
+
+      return result;
    }
 }

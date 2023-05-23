@@ -1,4 +1,4 @@
-package com.cloudops.engine.notifier;
+package com.cloudops.engine.basic.activity.notifier;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

@@ -1,4 +1,4 @@
-package com.cloudops.engine.basic;
+package com.cloudops.engine.basic.activity.flaky;
 
 import java.util.Optional;
 
@@ -7,13 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.cloudops.engine.BaseActivity;
-import com.cloudops.engine.sleep.MySleepActivityImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 
 @Component
 public class MyFlakyActivityImpl extends BaseActivity implements MyFlakyActivity {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(MySleepActivityImpl.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(MyFlakyActivityImpl.class);
 
    @Override
    public void flakyMethod(JsonNode jsonNode) {
@@ -26,6 +25,6 @@ public class MyFlakyActivityImpl extends BaseActivity implements MyFlakyActivity
          LOGGER.info("Let's divide by zero, shall we?");
          int number = 1 / 0;
       }
-      LOGGER.info("Not today!");
+      LOGGER.info("All good!");
    }
 }

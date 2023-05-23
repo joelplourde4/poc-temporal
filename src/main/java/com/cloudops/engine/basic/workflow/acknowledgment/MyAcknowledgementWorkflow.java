@@ -1,4 +1,4 @@
-package com.cloudops.engine.input;
+package com.cloudops.engine.basic.workflow.acknowledgment;
 
 import io.temporal.workflow.SignalMethod;
 import io.temporal.workflow.WorkflowInterface;

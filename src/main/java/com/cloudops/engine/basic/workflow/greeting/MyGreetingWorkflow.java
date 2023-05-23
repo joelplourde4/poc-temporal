@@ -1,4 +1,4 @@
-package com.cloudops.engine.greeting;
+package com.cloudops.engine.basic.workflow.greeting;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;
@@ -7,5 +7,5 @@ import io.temporal.workflow.WorkflowMethod;
 public interface MyGreetingWorkflow {
 
    @WorkflowMethod
-   String getGreeting(String name);
+   String getGreeting(String firstName, String lastName);
 }

@@ -1,4 +1,4 @@
-package com.cloudops.engine.input;
+package com.cloudops.engine.basic.activity.acknowledgment;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -6,7 +6,7 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
-public interface MyAcknowledgementActivity {
+public interface MyAcknowledgmentActivity {
 
    // By default, the name of the method is capitalized (E.g: ComposeGreeting)
    @ActivityMethod(name = "waitingForAcknowledgement")

@@ -1,4 +1,4 @@
-package com.cloudops.engine.sleep;
+package com.cloudops.engine.basic.activity.sleep;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,7 @@ public class MySleepActivityImpl extends BaseActivity implements MySleepActivity
       try {
          Thread.sleep(millis);
       } catch(Exception ex) {
-         LOGGER.warn("An exception occurred: {}", ex);
+         LOGGER.warn("An exception occurred: {}", ex.getMessage());
       }
    }
 }

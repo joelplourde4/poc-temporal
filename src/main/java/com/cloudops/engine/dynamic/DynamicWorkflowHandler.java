@@ -2,12 +2,13 @@ package com.cloudops.engine.dynamic;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import io.temporal.api.workflowservice.v1.ListOpenWorkflowExecutionsRequest;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.client.WorkflowStub;
@@ -17,7 +18,9 @@ import io.temporal.worker.Worker;
  * Class which serves as a point of entry to create DynamicWorkflow.
  */
 @Component
-public class MyDynamicWorkflowHandler {
+public class DynamicWorkflowHandler {
+
+   private static final Logger LOGGER = LoggerFactory.getLogger(DynamicWorkflowHandler.class);
 
    @Autowired
    private WorkflowClient workflowClient;
@@ -25,11 +28,15 @@ public class MyDynamicWorkflowHandler {
    @Autowired
    private Worker worker;
 
-   @PostConstruct
+   // @PostConstruct
    public void init() {
       // Hardcode this information of which workflow to fetch from the datasource
-      String id = "foreach-workflow";
+      String id = "simple-workflow";
+//      String id = "sleep-action";
+//      String id = "multiple-actions";
       String version = "v1";
+
+
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
       WorkflowStub workflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl", WorkflowOptions.newBuilder()
@@ -44,7 +51,7 @@ public class MyDynamicWorkflowHandler {
       // Wait for workflow to finish, it will return a WorkloadData (Eventually)
       JsonNode result = workflowStub.getResult(JsonNode.class);
 
-      System.out.println("Result: " + result.toPrettyString());
+      LOGGER.info("Result: {}", result.toPrettyString());
    }
 
    // @PostConstruct

@@ -10,10 +10,11 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import com.cloudops.engine.basic.MyWorkflowImpl;
+import com.cloudops.engine.basic.workflow.MyWorkflowImpl;
+import com.cloudops.engine.basic.activity.acknowledgment.flaky.MyFlakyWorkflowImpl;
 import com.cloudops.engine.dynamic.MyDynamicWorkflowImpl;
-import com.cloudops.engine.greeting.MyGreetingWorkflowImpl;
-import com.cloudops.engine.input.MyAcknowledgementWorkflowImpl;
+import com.cloudops.engine.basic.workflow.greeting.MyGreetingWorkflowImpl;
+import com.cloudops.engine.basic.workflow.acknowledgment.MyAcknowledgementWorkflowImpl;
 
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowClientOptions;
@@ -80,6 +81,9 @@ public class EngineApplication {
 
       // Greeting workflows
       worker.registerWorkflowImplementationTypes(MyGreetingWorkflowImpl.class);
+
+      // Greeting workflows
+      worker.registerWorkflowImplementationTypes(MyFlakyWorkflowImpl.class);
 
       // Input workflow
       worker.registerWorkflowImplementationTypes(MyAcknowledgementWorkflowImpl.class);

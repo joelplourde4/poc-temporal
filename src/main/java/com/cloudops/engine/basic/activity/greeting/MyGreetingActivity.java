@@ -1,4 +1,4 @@
-package com.cloudops.engine.greeting;
+package com.cloudops.engine.basic.activity.greeting;
 
 import com.fasterxml.jackson.databind.JsonNode;
 

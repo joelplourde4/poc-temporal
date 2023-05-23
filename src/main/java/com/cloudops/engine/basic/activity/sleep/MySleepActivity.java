@@ -1,4 +1,4 @@
-package com.cloudops.engine.basic;
+package com.cloudops.engine.basic.activity.sleep;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -6,8 +6,8 @@ import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
-public interface MyFlakyActivity {
+public interface MySleepActivity {
 
-   @ActivityMethod(name = "flaky")
-   void flakyMethod(JsonNode argument);
+   @ActivityMethod(name = "sleep")
+   void sleep(JsonNode jsonNode);
 }

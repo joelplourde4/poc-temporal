@@ -1,4 +1,4 @@
-package com.cloudops.engine.greeting;
+package com.cloudops.engine.basic.activity.greeting;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

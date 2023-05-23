@@ -68,6 +68,10 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
       String id = encodedValues.get(0, String.class);
       String version = encodedValues.get(1, String.class);
 
+      if (StringUtils.isBlank(id) || StringUtils.isBlank(version)) {
+         return null;
+      }
+
       // TODO Get any arguments for this particular workflow, for now, it is a simple string
       Object arguments = encodedValues.get(2, String.class);
 

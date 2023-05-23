@@ -1,0 +1,51 @@
+{
+  "id": "mychainedactivitesworkflow",
+  "name": "My Chained Workflow",
+  "version": "2.0.0",
+  "specVersion": "0.8",
+  "autoRetries": true,
+  "states": [
+    {
+      "name": "GreetMichael",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Hello",
+              "name": "Michael Wazowski!"
+            }
+          },
+          "actionDataFilter": {
+            "toStateData": "GreetJames"
+          }
+        }
+      ],
+      "transition": "GreetJames",
+      "end": false
+    },
+    {
+      "name": "GreetJames",
+      "type": "operation",
+      "actions": [
+        {
+          "name": "Greet Action",
+          "functionRef": {
+            "refName": "composeGreeting",
+            "arguments": {
+              "greeting": "Hello",
+              "name": "James P. Sullivan!"
+            }
+          },
+          "actionDataFilter": {
+            "fromStateData": "GreetMichael",
+            "results": ".data.greeting"
+          }
+        }
+      ],
+      "end": true
+    }
+  ]
+}
