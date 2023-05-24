@@ -19,11 +19,12 @@ public class WorkflowHandler {
    @Autowired
    private WorkflowClient workflowClient;
 
+   /* Uncomment this Annotation to enable this workflow handler */
    // @PostConstruct
    public void init() {
       System.out.println("Initializing the Workflow Handler!");
 
-      // -----------------------------------------
+      // Scenario 1 --------------------------------
 
 //      MyWorkflow myWorkflow = workflowClient.newWorkflowStub(MyWorkflow.class, WorkflowOptions.newBuilder()
 //              .setTaskQueue("task-queue") // It is important to define in which queue does this workflow needs to be execute
@@ -33,7 +34,7 @@ public class WorkflowHandler {
 //      // Using the static method.
 //      WorkflowClient.start(myWorkflow::helloWorld);
 
-      // -----------------------------------------
+      // Scenario 2 --------------------------------
 
       MyGreetingWorkflow myGreetingWorkflow = workflowClient.newWorkflowStub(MyGreetingWorkflow.class, WorkflowOptions.newBuilder()
                  .setTaskQueue("task-queue")
@@ -43,7 +44,7 @@ public class WorkflowHandler {
       // Using the static method.
       WorkflowClient.start(() -> myGreetingWorkflow.getGreeting("Hello", "Michael Wazowski"));
 
-      // -----------------------------------------
+      // Scenario 3 --------------------------------
 
 //      MyFlakyWorkflow myFlakyWorkflow = workflowClient.newWorkflowStub(MyFlakyWorkflow.class, WorkflowOptions.newBuilder()
 //                 .setTaskQueue("task-queue")
@@ -52,14 +53,14 @@ public class WorkflowHandler {
 //
 //      WorkflowClient.start(myFlakyWorkflow::flakyWorkflow);
 
-      //------------------------------------------
+      // Scenario 4 --------------------------------
 //      MyAcknowledgementWorkflow myInputWorkflow = workflowClient.newWorkflowStub(MyAcknowledgementWorkflow.class, WorkflowOptions.newBuilder()
 //              .setTaskQueue("task-queue")
 //              .validateBuildWithDefaults()
 //      );
 //
 //      WorkflowClient.start(myInputWorkflow::waitingForAcknowledgement);
-      //------------------------------------------
+      // Scenario 4 (continued) ----------------------
 
 //      sendSignal("2f9d4543-33d8-4911-a817-238735e38ef5");
 

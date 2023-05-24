@@ -22,31 +22,35 @@ public class DynamicWorkflowHandler {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(DynamicWorkflowHandler.class);
 
+   private static final String VERSION = "v1";
+
    @Autowired
    private WorkflowClient workflowClient;
 
    @Autowired
    private Worker worker;
 
+   /* Uncomment this Annotation to enable this workflow handler */
    // @PostConstruct
    public void init() {
-      // Hardcode this information of which workflow to fetch from the datasource
+      // Scenario 1 --------------------------------
       String id = "simple-workflow";
+
+      // Scenario 2 --------------------------------
 //      String id = "sleep-action";
+
+      // Scenario 3 --------------------------------
 //      String id = "multiple-actions";
-      String version = "v1";
-
-
 
       // Create a new Dynamic workflow on the Task queue: Task Queue
       WorkflowStub workflowStub = workflowClient.newUntypedWorkflowStub("MyDynamicWorkflowImpl", WorkflowOptions.newBuilder()
-              .setWorkflowId(id + "-" + version)
+              .setWorkflowId(id + "-" + VERSION)
               .setTaskQueue("task-queue")
               .build()
       );
 
       // Start the Workflow with its id, version and any arguments
-      workflowStub.start(id, version, "argument");
+      workflowStub.start(id, VERSION, "argument");
 
       // Wait for workflow to finish, it will return a WorkloadData (Eventually)
       JsonNode result = workflowStub.getResult(JsonNode.class);
