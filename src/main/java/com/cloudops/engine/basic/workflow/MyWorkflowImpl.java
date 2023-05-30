@@ -4,14 +4,17 @@ import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.cloudops.engine.BaseWorkflow;
 import com.cloudops.engine.basic.activity.MyActivity;
 
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 
-public class MyWorkflowImpl implements MyWorkflow {
+@Component
+public class MyWorkflowImpl extends BaseWorkflow implements MyWorkflow {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(MyWorkflowImpl.class);
 

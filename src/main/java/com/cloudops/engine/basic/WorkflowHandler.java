@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.cloudops.engine.basic.activity.acknowledgment.flaky.MyFlakyWorkflow;
+import com.cloudops.engine.basic.workflow.MyWorkflow;
 import com.cloudops.engine.basic.workflow.acknowledgment.MyAcknowledgementWorkflow;
 import com.cloudops.engine.basic.workflow.greeting.MyGreetingWorkflow;
 
@@ -20,29 +21,29 @@ public class WorkflowHandler {
    private WorkflowClient workflowClient;
 
    /* Uncomment this Annotation to enable this workflow handler */
-   // @PostConstruct
+   @PostConstruct
    public void init() {
       System.out.println("Initializing the Workflow Handler!");
 
       // Scenario 1 --------------------------------
 
-//      MyWorkflow myWorkflow = workflowClient.newWorkflowStub(MyWorkflow.class, WorkflowOptions.newBuilder()
-//              .setTaskQueue("task-queue") // It is important to define in which queue does this workflow needs to be execute
-//              .validateBuildWithDefaults()
-//      );
-//
-//      // Using the static method.
-//      WorkflowClient.start(myWorkflow::helloWorld);
-
-      // Scenario 2 --------------------------------
-
-      MyGreetingWorkflow myGreetingWorkflow = workflowClient.newWorkflowStub(MyGreetingWorkflow.class, WorkflowOptions.newBuilder()
-                 .setTaskQueue("task-queue")
-                 .validateBuildWithDefaults()
+      MyWorkflow myWorkflow = workflowClient.newWorkflowStub(MyWorkflow.class, WorkflowOptions.newBuilder()
+              .setTaskQueue("task-queue") // It is important to define in which queue does this workflow needs to be execute
+              .validateBuildWithDefaults()
       );
 
       // Using the static method.
-      WorkflowClient.start(() -> myGreetingWorkflow.getGreeting("Hello", "Michael Wazowski"));
+      WorkflowClient.start(myWorkflow::helloWorld);
+
+      // Scenario 2 --------------------------------
+
+//      MyGreetingWorkflow myGreetingWorkflow = workflowClient.newWorkflowStub(MyGreetingWorkflow.class, WorkflowOptions.newBuilder()
+//                 .setTaskQueue("task-queue")
+//                 .validateBuildWithDefaults()
+//      );
+//
+//      // Using the static method.
+//      WorkflowClient.start(() -> myGreetingWorkflow.getGreeting("Hello", "Michael Wazowski"));
 
       // Scenario 3 --------------------------------
 

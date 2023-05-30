@@ -2,25 +2,19 @@ package com.cloudops.engine.dynamic;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.expression.Expression;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.stereotype.Component;
 
+import com.cloudops.engine.BaseWorkflow;
 import com.cloudops.engine.dynamic.model.WorkflowData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import io.serverlessworkflow.api.actions.Action;
 import io.serverlessworkflow.api.events.OnEvents;
@@ -42,7 +36,8 @@ import io.temporal.workflow.Workflow;
 /**
  * The definition of a DynamicWorkflow
  */
-public class MyDynamicWorkflowImpl implements DynamicWorkflow {
+@Component
+public class MyDynamicWorkflowImpl extends BaseWorkflow implements DynamicWorkflow {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(MyDynamicWorkflowImpl.class);
 
@@ -102,10 +97,10 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
    /**
     * Method that handle signals received
-    *
+    * <p>
     * This method may "wake" up this workflow if necessary.
     *
-    * @param signalName The name of the signal
+    * @param signalName    The name of the signal
     * @param encodedValues The encoded values
     */
    private void handleSignals(String signalName, EncodedValues encodedValues) {
@@ -278,14 +273,14 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 //            }
 //            completableFutures.forEach(CompletableFuture::join);
 //         } else {
-            System.out.println("Executing sequentially!");
-            for (final JsonNode object : jsonNode) {
-               Object data = activity.execute(
-                       action.getFunctionRef().getRefName(),
-                       String.class, // This will need to be generify to a generic payload returned by an activity.
-                       object);
+         System.out.println("Executing sequentially!");
+         for (final JsonNode object : jsonNode) {
+            Object data = activity.execute(
+                    action.getFunctionRef().getRefName(),
+                    String.class, // This will need to be generify to a generic payload returned by an activity.
+                    object);
 
-               workflowData.addResults(action.getName(), data);
+            workflowData.addResults(action.getName(), data);
 //            }
          }
       }
@@ -295,6 +290,7 @@ public class MyDynamicWorkflowImpl implements DynamicWorkflow {
 
    /**
     * This method blocks until a signal has been received.
+    *
     * @param jsonNode The arguments, if any.
     */
    public void waitForSignal(JsonNode jsonNode) {

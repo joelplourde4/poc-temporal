@@ -4,7 +4,9 @@ import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.cloudops.engine.BaseWorkflow;
 import com.cloudops.engine.basic.activity.flaky.MyFlakyActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,7 +15,8 @@ import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 
-public class MyFlakyWorkflowImpl implements MyFlakyWorkflow {
+@Component
+public class MyFlakyWorkflowImpl extends BaseWorkflow implements MyFlakyWorkflow {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(MyFlakyWorkflowImpl.class);
 

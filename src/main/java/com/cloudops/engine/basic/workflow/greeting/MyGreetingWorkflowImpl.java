@@ -4,7 +4,9 @@ import java.time.Duration;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+import com.cloudops.engine.BaseWorkflow;
 import com.cloudops.engine.basic.activity.greeting.MyGreetingActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -14,7 +16,8 @@ import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
 
 // Hard-coded Greeting Workflow
-public class MyGreetingWorkflowImpl implements MyGreetingWorkflow {
+@Component
+public class MyGreetingWorkflowImpl extends BaseWorkflow implements MyGreetingWorkflow {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(MyGreetingWorkflowImpl.class);
 
